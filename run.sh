@@ -81,7 +81,7 @@ build_target() {
 }
 
 #process each build target repository specified in target-config.conf
-for t in $(cat target-config.conf)
+for t in $(cat ${BUILD_PATH}/target-config.conf)
 do
   build_target $t
 done
