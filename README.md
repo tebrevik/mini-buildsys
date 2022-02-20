@@ -22,4 +22,7 @@ example: MINI_BUILDSYS_GIT_BASE_URL=git@github.com:tebrevik
 A simple configuration file where each target repository is specified one per line.
 
 ### crontab example:
-*/30 * * * * MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371 MINI_BUILDSYS_GIT_BASE_URL=git@github.com:tebrevik ~/build/run.sh
+```
+*/30 * * * * MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371 MINI_BUILDSYS_GIT_BASE_URL=git@github.com:tebrevik ~/build/run.sh >/dev/null
+```
+This will run set the necessary environment variables, run every 30 minutes and only send email on errors
