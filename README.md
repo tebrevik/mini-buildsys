@@ -3,7 +3,7 @@ A simple bash-based build system that you can use when jenkins, etc. are too com
 Built to be run from a cron-job to pull updates from remote repository, build and if target repository has been tagged then push to a docker repository with that tag as a version tag.
 
 ### Notes about git tags
-I'm using git tags in my repositories to determine if this build is to be a release or not. If the target repository HEAD is tagged with say 0.1.0 then the docker image will be tagged with :0.1.0.  If it's not tagged then it's just built and not pushed to a docker repository, in other words then it's just a build step to check the integrity of the commit.
+I'm using git tags in my repositories to determine if this build is to be a release or not. If the target repository HEAD is tagged with say 0.1.0 then the docker image will be tagged with :0.1.0 and pushed to the docker repository.  If it's not tagged then it's just built and not pushed to a docker repository, in other words then it's just a build step to check the integrity of the commit.
 
 ## Usage
 run.sh need the following to be useful:
