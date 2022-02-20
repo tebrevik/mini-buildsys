@@ -20,6 +20,12 @@ example: MINI_BUILDSYS_GIT_BASE_URL=git@github.com:tebrevik
 
 ### target-config.conf
 A simple configuration file where each target repository is specified one per line.
+```
+repository-one
+repository-two
+```
+This will then clone ${MINI_BUILDSYS_GIT_BASE_URL}/repository-one and ${MINI_BUILDSYS_GIT_BASE_URL}/repository-two.
+The resulting docker images, if tagged, will be pushed to ${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-one:tag and ${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-two:tag
 
 ### crontab example:
 ```
