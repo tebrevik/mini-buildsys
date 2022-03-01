@@ -34,20 +34,22 @@ build_target() {
     if [ -d ${target} ]
     then
         cd ${target}
-        LOCAL_STATE=$(git rev-parse @)
-        REMOTE_STATE=$(git rev-parse @{u})
+        LOCAL_STATE=$(/usr/bin/env git rev-parse @)
+        REMOTE_STATE=$(/usr/bin/env git ls-remote --heads | /usr/bin/env grep main | /usr/bin/env awk '{split($0,a);print a[1]}') 
         echo "Remote state ${REMOTE_STATE}" 2>&1 | /usr/bin/env tee --append ${LOGNAME}
         echo "Local state ${LOCAL_STATE}"   2>&1 | /usr/bin/env tee --append ${LOGNAME}
         if [ ${LOCAL_STATE} = ${REMOTE_STATE} ]
         then
             echo no changes  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-            git ls-remote --tags > /dev/null 2>&1
-            if [ $(git describe --tags --exact-match) ]
+            remote_tag=$(/usr/bin/env git ls-remote --tags 2>/dev/null | /usr/bin/env grep $(git rev-parse HEAD) | /usr/bin/env awk '{split($0,a);split(a[2],b,"/");print b[3];}')
+            if [ ! -z ${remote_tag} ]
             then 
                 if [ -f BUILD_TAGGED ]
                 then
                     rm ${LOGNAME} #don't need logfile
                     return 0
+                else
+		    /usr/bin/env git pull 2>&1 | /usr/bin/env tee --append ${LOGNAME}
                 fi
             else 
                     rm ${LOGNAME} #don't need logfile
@@ -55,27 +57,27 @@ build_target() {
             fi
         else
             rm BUILD_TAGGED
-            git pull  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+            /usr/bin/env git pull  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         fi
     else
-        git clone --recursive ${MINI_BUILDSYS_GIT_BASE_URL}/${target}.git  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        /usr/bin/env git clone --recursive ${MINI_BUILDSYS_GIT_BASE_URL}/${target}.git  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         cd ${target}
     fi
 
-    if [ $(git describe --tags --exact-match) ]; then
-    tag=$(git describe --tags)
+    if [ $(/usr/bin/env git describe --tags --exact-match) ]; then
+        tag=$(/usr/bin/env git describe --tags)
     else
-    tag="notag"
+        tag="notag"
     fi
 
     if [ ${tag} == "notag" ]
     then
         echo "building unversioned build"  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        docker build -t $1 .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        /usr/bin/env docker build -t $1 .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
     else
         echo "building version: ${tag}"  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        docker build -t ${MINI_BUILDSYS_DOCKER_REPO_URL}/$1:${tag} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        docker push ${MINI_BUILDSYS_DOCKER_REPO_URL}/$1:${tag}  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        /usr/bin/env docker build -t ${MINI_BUILDSYS_DOCKER_REPO_URL}/$1:${tag} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        /usr/bin/env docker push ${MINI_BUILDSYS_DOCKER_REPO_URL}/$1:${tag}  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         touch BUILD_TAGGED
     fi
 }
