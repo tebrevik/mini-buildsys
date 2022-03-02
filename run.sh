@@ -35,7 +35,7 @@ build_target() {
     then
         cd ${target}
         LOCAL_STATE=$(/usr/bin/env git rev-parse @)
-        REMOTE_STATE=$(/usr/bin/env git ls-remote --heads | /usr/bin/env grep main | /usr/bin/env awk '{split($0,a);print a[1]}') 
+        REMOTE_STATE=$(/usr/bin/env git ls-remote --heads 2>/dev/null | /usr/bin/env grep main | /usr/bin/env awk '{split($0,a);print a[1]}') 
         echo "Remote state ${REMOTE_STATE}" 2>&1 | /usr/bin/env tee --append ${LOGNAME}
         echo "Local state ${LOCAL_STATE}"   2>&1 | /usr/bin/env tee --append ${LOGNAME}
         if [ ${LOCAL_STATE} = ${REMOTE_STATE} ]
