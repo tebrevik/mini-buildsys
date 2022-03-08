@@ -43,7 +43,7 @@ build_target() {
             echo no changes  2>&1 | /usr/bin/env tee --append ${LOGNAME}
             remote_tag=$(/usr/bin/env git ls-remote --tags 2>/dev/null | /usr/bin/env grep $(git rev-parse HEAD) | /usr/bin/env awk '{split($0,a);split(a[2],b,"/");print b[3];}')
             if [ ! -z ${remote_tag} ]
-            then 
+            then
                 if [ -f BUILD_TAGGED ]
                 then
                     rm ${LOGNAME} #don't need logfile
@@ -56,7 +56,10 @@ build_target() {
                     return 0
             fi
         else
-            rm BUILD_TAGGED
+            if [ -f BUILD_TAGGED ]
+            then
+                rm BUILD_TAGGED
+            fi
             /usr/bin/env git pull  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         fi
     else
