@@ -67,7 +67,7 @@ build_target() {
         cd ${target}
     fi
 
-    if [ $(/usr/bin/env git describe --tags --exact-match) ]; then
+    if [ $(/usr/bin/env git describe --tags --exact-match 2>/dev/null) ]; then
         tag=$(/usr/bin/env git describe --tags)
     else
         tag="notag"
