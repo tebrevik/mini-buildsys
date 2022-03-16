@@ -5,7 +5,6 @@ set -e
 BUILD_PATH=$(dirname $(readlink -f "$0"))
 START_DIR=$(pwd)
 
-LOGNAME=${BUILD_PATH}/log/$(/usr/bin/env date "+%FT%H.%M").log
 mkdir -p ${BUILD_PATH}/log
 
 if [ -z $MINI_BUILDSYS_DOCKER_REPO_URL ]
@@ -29,6 +28,7 @@ fi
 
 build_target() {
     target=$1
+    LOGNAME=${BUILD_PATH}/log/$(/usr/bin/env date "+%FT%H.%M")-${target}.log
     cd ${BUILD_PATH}
     echo "starting build for ${target}" 2>&1 | /usr/bin/env tee --append ${LOGNAME}
     if [ -d ${target} ]
