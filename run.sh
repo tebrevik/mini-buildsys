@@ -38,7 +38,7 @@ build_target() {
         REMOTE_STATE=$(/usr/bin/env git ls-remote --heads 2>/dev/null | /usr/bin/env grep main | /usr/bin/env awk '{split($0,a);print a[1]}') 
         echo "Remote state ${REMOTE_STATE}" 2>&1 | /usr/bin/env tee --append ${LOGNAME}
         echo "Local state ${LOCAL_STATE}"   2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        if [ ${LOCAL_STATE} = ${REMOTE_STATE} ]
+        if [ "${LOCAL_STATE}" == "${REMOTE_STATE}" ]
         then
             echo no changes  2>&1 | /usr/bin/env tee --append ${LOGNAME}
             remote_tag=$(/usr/bin/env git ls-remote --tags 2>/dev/null | /usr/bin/env grep $(git rev-parse HEAD) | /usr/bin/env awk '{split($0,a);split(a[2],b,"/");print b[3];}')
