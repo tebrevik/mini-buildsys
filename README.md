@@ -11,12 +11,12 @@ run.sh need the following to be useful:
 ### MINI_BUILDSYS_DOCKER_REPO_URL
 Environment variable MINI_BUILDSYS_DOCKER_REPO_URL specifying URL to your docker repository. This is used for pushing tagged images to your docker repository.
 
-example: MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371 for using a docker repository listening on port 34371 
+example: ```MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371``` for using a docker repository listening on port 34371 
 
 ### MINI_BUILDSYS_GIT_BASE_URL
 Environment variable MINI_BUILDSYS_GIT_BASE_URL specifying base path to your git account.
 
-example: MINI_BUILDSYS_GIT_BASE_URL=git@github.com:your-account-name
+example: ```MINI_BUILDSYS_GIT_BASE_URL=git@github.com:your-account-name```
 
 ### target-config.conf
 A simple configuration file where each target repository is specified one per line.
@@ -24,8 +24,8 @@ A simple configuration file where each target repository is specified one per li
 repository-one
 repository-two
 ```
-This will then clone ${MINI_BUILDSYS_GIT_BASE_URL}/repository-one and ${MINI_BUILDSYS_GIT_BASE_URL}/repository-two.
-The resulting docker images, if tagged, will be pushed to ${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-one:tag and ${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-two:tag
+This will then clone ```${MINI_BUILDSYS_GIT_BASE_URL}/repository-one``` and ```${MINI_BUILDSYS_GIT_BASE_URL}/repository-two```.
+The resulting docker images, if tagged, will be pushed to ```${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-one:tag``` and ```${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-two:tag```
 
 ### crontab example:
 ```
