@@ -13,22 +13,17 @@ Environment variable MINI_BUILDSYS_DOCKER_REPO_URL specifying URL to your docker
 
 example: ```MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371``` for using a docker repository listening on port 34371 
 
-### MINI_BUILDSYS_GIT_BASE_URL
-Environment variable MINI_BUILDSYS_GIT_BASE_URL specifying base path to your git account.
-
-example: ```MINI_BUILDSYS_GIT_BASE_URL=git@github.com:your-account-name```
-
 ### target-config.conf
-A simple configuration file where each target repository is specified one per line.
+A simple configuration file where each target repository is specified with the git base url one per line.
 ```
-repository-one
-repository-two
+git@url1:your-account-name,repository-one
+git@url2:your-account-name,repository-two
 ```
-This will then clone ```${MINI_BUILDSYS_GIT_BASE_URL}/repository-one``` and ```${MINI_BUILDSYS_GIT_BASE_URL}/repository-two```.
+This will then clone ```git@url1:your-account-name/repository-one``` and ```git@url2:your-account-name/repository-two```.
 The resulting docker images, if tagged, will be pushed to ```${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-one:tag``` and ```${MINI_BUILDSYS_DOCKER_REPO_URL}/repository-two:tag```
 
 ### crontab example:
 ```
-*/30 * * * * MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371 MINI_BUILDSYS_GIT_BASE_URL=git@github.com:your-account-name ~/build/run.sh >/dev/null
+*/30 * * * * MINI_BUILDSYS_DOCKER_REPO_URL=localhost:34371 ~/build/run.sh >/dev/null
 ```
 This will set the necessary environment variables, run every 30 minutes and only send email on errors
