@@ -13,12 +13,6 @@ then
   exit -1
 fi
 
-if [ -z $MINI_BUILDSYS_GIT_BASE_URL ]
-then
-  echo "git base url must be specified in environment variable MINI_BUILDSYS_GIT_BASE_URL"
-  exit -1
-fi
-
 if [ ! -f ${BUILD_PATH}/target-config.conf ]
 then
     echo "target-config.conf does not exist. Specify one target repository to build per line"
@@ -27,8 +21,10 @@ fi
 
 
 build_target() {
-    target=$1
+    baseURL=$(echo "$1" | cut -d ',' -f 1)
+    target=$(echo "$1" | cut -d ',' -f 2)
     LOGNAME=${BUILD_PATH}/log/$(/usr/bin/env date "+%FT%H.%M")-${target}.log
+    SUMMARY_LOG=${BUILD_PATH}/log/$(/usr/bin/env date "+%F").log
     cd ${BUILD_PATH}
     echo "starting build for ${target}" 2>&1 | /usr/bin/env tee --append ${LOGNAME}
     if [ -d ${target} ]
@@ -63,7 +59,7 @@ build_target() {
             /usr/bin/env git pull  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         fi
     else
-        /usr/bin/env git clone --recursive ${MINI_BUILDSYS_GIT_BASE_URL}/${target}.git  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        /usr/bin/env git clone --recursive ${baseURL}/${target}.git  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         cd ${target}
     fi
 
@@ -76,19 +72,23 @@ build_target() {
     if [ ${tag} == "notag" ]
     then
         echo "building unversioned build"  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        /usr/bin/env docker build -t $1 .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        echo "Build ${target}:unversioned - starting" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
+        /usr/bin/env docker build -t ${target} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        echo "Build ${target}:unversioned - completed" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
     else
         echo "building version: ${tag}"  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        /usr/bin/env docker build -t ${MINI_BUILDSYS_DOCKER_REPO_URL}/$1:${tag} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
-        /usr/bin/env docker push ${MINI_BUILDSYS_DOCKER_REPO_URL}/$1:${tag}  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        echo "Build ${target}:${tag} - starting" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
+        /usr/bin/env docker build -t ${MINI_BUILDSYS_DOCKER_REPO_URL}/${target}:${tag} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        /usr/bin/env docker push ${MINI_BUILDSYS_DOCKER_REPO_URL}/${target}:${tag}  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         touch BUILD_TAGGED
+        echo "Build ${target}:${tag} - done" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
     fi
 }
 
 #process each build target repository specified in target-config.conf
 for t in $(cat ${BUILD_PATH}/target-config.conf)
 do
-  build_target $t
+  build_target "$t"
 done
 
 #return to where we was when we started the build
