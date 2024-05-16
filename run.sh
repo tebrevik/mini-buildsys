@@ -13,6 +13,13 @@ setNormalText() {
     echo -e "\e[0m"
 }
 
+abort() {
+    setRedText
+    echo "Build aborted!"
+    setNormalText
+}
+
+trap 'abort' SIGINT SIGTERM
 
 BUILD_PATH=$(dirname $(readlink -f "$0"))
 START_DIR=$(pwd)
