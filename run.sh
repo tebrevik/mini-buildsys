@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 set -e 
 
+setRedText() {
+    echo -e "\e[31m"
+}
+
+setGreenText() {
+    echo -e "\e[32m"
+}
+
+setNormalText() {
+    echo -e "\e[0m"
+}
+
 
 BUILD_PATH=$(dirname $(readlink -f "$0"))
 START_DIR=$(pwd)
@@ -9,13 +21,17 @@ mkdir -p ${BUILD_PATH}/log
 
 if [ -z $MINI_BUILDSYS_DOCKER_REPO_URL ]
 then
+  setRedText
   echo "docker registry url must be specified in environment variable MINI_BUILDSYS_DOCKER_REPO_URL"
+  setNormalText
   exit -1
 fi
 
 if [ ! -f ${BUILD_PATH}/target-config.conf ]
 then
+    setRedText
     echo "target-config.conf does not exist. Specify one target repository to build per line"
+    setNormalText
     exit -1
 fi
 
@@ -74,14 +90,18 @@ build_target() {
         echo "building unversioned build"  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         echo "Build ${target}:unversioned - starting" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
         /usr/bin/env docker build -t ${target} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
+        setGreenText
         echo "Build ${target}:unversioned - completed" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
+        setNormalText
     else
         echo "building version: ${tag}"  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         echo "Build ${target}:${tag} - starting" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
         /usr/bin/env docker build -t ${MINI_BUILDSYS_DOCKER_REPO_URL}/${target}:${tag} .  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         /usr/bin/env docker push ${MINI_BUILDSYS_DOCKER_REPO_URL}/${target}:${tag}  2>&1 | /usr/bin/env tee --append ${LOGNAME}
         touch BUILD_TAGGED
+        setGreenText
         echo "Build ${target}:${tag} - done" 2>&1 | /usr/bin/env tee --append ${SUMMARY_LOG}
+        setNormalText
     fi
 }
 
